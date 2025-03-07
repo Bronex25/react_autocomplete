@@ -41,7 +41,7 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
       debounce((value: string) => {
         setQuery(value);
       }, delay),
-    [],
+    [delay],
   );
 
   useEffect(() => {
