@@ -13,7 +13,7 @@ export const DropdownMenu: React.FC<Props> = ({ people, onClick }) => {
         {people.map((person, i) => (
           <div
             className="dropdown-item"
-            onMouseDown={() => onClick(person)}
+            onClick={() => onClick(person)}
             data-cy="suggestion-item"
             key={i + 1}
           >

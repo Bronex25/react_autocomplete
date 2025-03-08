@@ -21,11 +21,27 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
   const [focus, setFocus] = useState(false);
   const [appliedQuery, setAppliedQuery] = useState('');
 
-  const dropDown = useRef<HTMLDivElement>(null);
+  const dropDown = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropDown.current && !dropDown.current.contains(e.target as Node)) {
+        setFocus(false);
+      }
+    };
+
+    if (focus) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [focus]);
 
   const filteredPeople = useMemo(() => {
     return peopleFromServer.filter(person =>
-      person.name.toLowerCase().includes(query.toLowerCase()),
+      person.name.toLowerCase().includes(query.toLowerCase().trim()),
     );
   }, [query]);
 
@@ -41,7 +57,7 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
       debounce((value: string) => {
         setQuery(value);
       }, delay),
-    [],
+    [delay],
   );
 
   useEffect(() => {
@@ -52,6 +68,13 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
 
   const onChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value.trim() === '') {
+        setQuery('');
+        setAppliedQuery('');
+
+        return;
+      }
+
       setAppliedQuery(event.target.value);
       debounceOnChange(event.target.value);
       setSelectedPerson(null);
@@ -78,7 +101,6 @@ export const App: React.FC<Props> = ({ delay = 300 }) => {
               data-cy="search-input"
               onChange={onChange}
               onFocus={() => setFocus(true)}
-              onBlur={() => setFocus(false)}
             />
           </div>
           {focus && filteredPeople.length !== 0 && (
