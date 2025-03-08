@@ -55,7 +55,7 @@ describe('Page', () => {
         .should('be.visible');
 
       page.suggestionItems()
-        .should('have.have.length', peopleFromServer.length);
+        .should('have.length', peopleFromServer.length);
     });
 
     it('should display "No matching suggestions" for non-matching input', () => {
